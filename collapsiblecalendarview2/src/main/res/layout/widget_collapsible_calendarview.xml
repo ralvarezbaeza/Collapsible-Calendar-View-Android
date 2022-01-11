@@ -71,6 +71,8 @@
             android:layout_height="wrap_content"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
+            android:textStyle="bold"
+            android:capitalize="sentences"
             android:layout_gravity="center"
             android:paddingBottom="12dp"
             android:paddingTop="10dp"
