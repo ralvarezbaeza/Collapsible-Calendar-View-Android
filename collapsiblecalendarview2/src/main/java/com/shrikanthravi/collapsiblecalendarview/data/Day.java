@@ -1,6 +1,5 @@
 package com.shrikanthravi.collapsiblecalendarview.data;
 
-import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -11,33 +10,32 @@ import java.util.Date;
  * Created by shrikanthravi on 06/03/18.
  */
 
-public class Day implements Parcelable{
+public class Day implements Parcelable {
 
     private int mYear;
     private int mMonth;
     private int mDay;
 
-    public Day(int year, int month, int day){
+    public Day(int year, int month, int day) {
         this.mYear = year;
         this.mMonth = month;
         this.mDay = day;
     }
 
-    public int getMonth(){
+    public int getMonth() {
         return mMonth;
     }
 
-    public int getYear(){
+    public int getYear() {
         return mYear;
     }
 
-    public int getDay(){
+    public int getDay() {
         return mDay;
     }
 
 
-
-    public Day(Parcel in){
+    public Day(Parcel in) {
         int[] data = new int[3];
         in.readIntArray(data);
         this.mYear = data[0];
@@ -52,10 +50,11 @@ public class Day implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeIntArray(new int[] {this.mYear,
+        dest.writeIntArray(new int[]{this.mYear,
                 this.mMonth,
                 this.mDay});
     }
+
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         public Day createFromParcel(Parcel in) {
             return new Day(in);
@@ -66,15 +65,25 @@ public class Day implements Parcelable{
         }
     };
 
-    public long toUnixTime(){
+    public long toUnixTime() {
         Date date = new Date(this.mYear, this.mMonth, this.mDay);
         return date.getTime();
     }
 
-    public int getDiff(){
+    public int getDiff() {
         Calendar todayCal = Calendar.getInstance();
-        Day day = new Day(todayCal.get(Calendar.YEAR), todayCal.get(Calendar.MONTH),todayCal.get(Calendar.DAY_OF_MONTH));
-        return (int)( (this.toUnixTime() - day.toUnixTime())
-                / (1000 * 60 * 60 * 24) );
+        Day day = new Day(todayCal.get(Calendar.YEAR), todayCal.get(Calendar.MONTH), todayCal.get(Calendar.DAY_OF_MONTH));
+        return (int) ((this.toUnixTime() - day.toUnixTime())
+                / (1000 * 60 * 60 * 24));
     }
+
+    public Boolean isWeekend() {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(this.getYear(), this.getMonth(), this.getDay());
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        return dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY;
+
+    }
+
 }

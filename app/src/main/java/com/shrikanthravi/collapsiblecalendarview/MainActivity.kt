@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.RelativeLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.shrikanthravi.collapsiblecalendarview.data.Day
 import com.shrikanthravi.collapsiblecalendarview.view.OnSwipeTouchListener
@@ -59,6 +60,7 @@ class MainActivity : AppCompatActivity(){
                 }
             }
         });
+
         //To hide or show expand icon
         collapsibleCalendar.setExpandIconVisible(true)
         val today = GregorianCalendar()
