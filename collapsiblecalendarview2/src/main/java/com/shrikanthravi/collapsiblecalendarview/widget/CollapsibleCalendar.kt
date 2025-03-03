@@ -7,6 +7,7 @@ package com.shrikanthravi.collapsiblecalendarview.widget
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.os.Handler
 import android.util.AttributeSet
 import android.view.View
@@ -14,6 +15,7 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.Transformation
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TableLayout
 import android.widget.TableRow
@@ -40,9 +42,7 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
         this.selectedItem = null
         this.selectedItemPosition = -1
         this.selectedDay = Day(
-            today.get(Calendar.YEAR),
-            today.get(Calendar.MONTH),
-            today.get(Calendar.DAY_OF_MONTH)
+            today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH)
         )
         mCurrentWeekIndex = suitableRowIndex
         setAdapter(calenderAdapter)
@@ -106,15 +106,11 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
                 val month = cal.get(Calendar.MONTH)
                 val year = cal.get(Calendar.YEAR)
                 return Day(
-                    year,
-                    month + 1,
-                    day
+                    year, month + 1, day
                 )
             }
             return Day(
-                selectedItem!!.year,
-                selectedItem!!.month,
-                selectedItem!!.day
+                selectedItem!!.year, selectedItem!!.month, selectedItem!!.day
             )
         }
         set(value: Day?) {
@@ -174,9 +170,7 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
     }
 
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
+        context, attrs, defStyleAttr
     ) {
         init(context)
     }
@@ -261,7 +255,7 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
                     txtDay.setTextColor(selectedItemTextColor)
                 }
 
-                if (day.isWeekend){
+                if (day.isWeekend) {
                     txtDay.setTextColor(Color.parseColor("#787A88"))
                 }
             }
@@ -289,8 +283,7 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
             var rowCurrent: TableRow
             rowCurrent = TableRow(context)
             rowCurrent.layoutParams = TableLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
             )
 
             val diasDeLaSemana = arrayOf("D", "L", "M", "X", "J", "V", "S")
@@ -302,9 +295,7 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
                 val txtDayOfWeek = view.findViewById<View>(R.id.txt_day_of_week) as TextView
                 txtDayOfWeek.setText(diasDeLaSemana[index])
                 view.layoutParams = TableRow.LayoutParams(
-                    0,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    1f
+                    0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
                 )
                 rowCurrent.addView(view)
             }
@@ -316,16 +307,13 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
                 if (i % 7 == 0) {
                     rowCurrent = TableRow(context)
                     rowCurrent.layoutParams = TableLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
                     )
                     mTableBody.addView(rowCurrent)
                 }
                 val view = mAdapter.getView(i)
                 view.layoutParams = TableRow.LayoutParams(
-                    0,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    1f
+                    0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
                 )
                 params.let { params ->
                     if (params != null && (mAdapter.getItem(i).diff < params.prevDays || mAdapter.getItem(
@@ -386,18 +374,21 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
         mCurrentWeekIndex = suitableRowIndex
     }
 
-    fun addEventTag(numYear: Int, numMonth: Int, numDay: Int) {
-        mAdapter!!.addEvent(Event(numYear, numMonth, numDay, eventColor))
+    fun addEventTag(numYear: Int, numMonth: Int, numDay: Int, color: Int = eventColor) {
+        mAdapter?.apply {
+            addEvent(Event(numYear, numMonth, numDay, color))
+            val viewIndex =
+                mItemList.indexOfFirst { it.year == numYear && it.month == numMonth && it.day == numDay }
 
-        reload()
+            if (viewIndex != -1) {
+                val imgEventTag = getView(viewIndex).findViewById<ImageView>(R.id.img_event_tag)
+                imgEventTag.visibility = View.VISIBLE
+                imgEventTag.setColorFilter(color, PorterDuff.Mode.SRC_ATOP)
+            }
+        }
     }
 
-    fun addEventTag(numYear: Int, numMonth: Int, numDay: Int, color: Int) {
-        mAdapter!!.addEvent(Event(numYear, numMonth, numDay, color))
 
-
-        reload()
-    }
 
     fun prevMonth() {
         val cal = mAdapter!!.calendar
@@ -508,20 +499,16 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
     }
 
     fun isSelectedDay(day: Day?): Boolean {
-        return (day != null
-                && selectedItem != null
-                && day.year == selectedItem!!.year
-                && day.month == selectedItem!!.month
-                && day.day == selectedItem!!.day)
+        return (day != null && selectedItem != null && day.year == selectedItem!!.year && day.month == selectedItem!!.month && day.day == selectedItem!!.day)
     }
 
     fun isToday(day: Day?): Boolean {
         val todayCal = Calendar.getInstance()
-        return (day != null
-                && day.year == todayCal.get(Calendar.YEAR)
-                && day.month == todayCal.get(Calendar.MONTH)
-                && day.day == todayCal.get(Calendar.DAY_OF_MONTH))
+        return (day != null && day.year == todayCal.get(Calendar.YEAR) && day.month == todayCal.get(
+            Calendar.MONTH
+        ) && day.day == todayCal.get(Calendar.DAY_OF_MONTH))
     }
+
     /**
      * collapse in milliseconds
      */
@@ -549,10 +536,8 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
             val anim = object : Animation() {
                 override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
 
-                    mScrollViewBody.layoutParams.height = if (interpolatedTime == 1f)
-                        targetHeight
-                    else
-                        currentHeight - ((currentHeight - targetHeight) * interpolatedTime).toInt()
+                    mScrollViewBody.layoutParams.height = if (interpolatedTime == 1f) targetHeight
+                    else currentHeight - ((currentHeight - targetHeight) * interpolatedTime).toInt()
                     mScrollViewBody.requestLayout()
 
                     if (mScrollViewBody.measuredHeight < topHeight + targetHeight) {
@@ -618,10 +603,9 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
             val anim = object : Animation() {
                 override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
 
-                    mScrollViewBody.layoutParams.height = if (interpolatedTime == 1f)
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                    else
-                        currentHeight - ((currentHeight - targetHeight) * interpolatedTime).toInt()
+                    mScrollViewBody.layoutParams.height =
+                        if (interpolatedTime == 1f) LinearLayout.LayoutParams.WRAP_CONTENT
+                        else currentHeight - ((currentHeight - targetHeight) * interpolatedTime).toInt()
                     mScrollViewBody.requestLayout()
 
                     if (interpolatedTime == 1f) {
