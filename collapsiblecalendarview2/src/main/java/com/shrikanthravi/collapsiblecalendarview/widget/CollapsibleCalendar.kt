@@ -388,6 +388,32 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
         }
     }
 
+    fun addEventTags(eventList: List<Event>) {
+        mAdapter?.apply {
+            val daysToUpdate = mutableSetOf<Int>() // Para rastrear qué días necesitan actualizarse
+
+            eventList.forEach { event ->
+                addEvent(event) // Agregar evento al adaptador
+                val key = event.year * 10000 + event.month * 100 + event.day
+                daysToUpdate.add(key) // Marcar el día como modificado
+            }
+
+            daysToUpdate.forEach { key ->
+                val dayIndex = mItemList.indexOfFirst {
+                    it.year * 10000 + it.month * 100 + it.day == key
+                }
+                if (dayIndex != -1) {
+                    val imgEventTag = getView(dayIndex).findViewById<ImageView>(R.id.img_event_tag)
+                    imgEventTag.visibility = View.VISIBLE
+                    imgEventTag.setColorFilter(eventList.first().color, PorterDuff.Mode.SRC_ATOP)
+                }
+            }
+
+            requestLayout()
+        }
+    }
+
+
 
 
     fun prevMonth() {
