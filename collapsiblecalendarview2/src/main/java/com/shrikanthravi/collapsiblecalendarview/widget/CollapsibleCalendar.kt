@@ -36,7 +36,7 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
     override fun changeToToday() {
         val calendar = Calendar.getInstance()
         val calenderAdapter = CalendarAdapter(context, calendar);
-        calenderAdapter.mEventList = mAdapter!!.mEventList
+        calenderAdapter.mItemList = mAdapter!!.mItemList
         calenderAdapter.setFirstDayOfWeek(firstDayOfWeek)
         val today = GregorianCalendar()
         this.selectedItem = null
